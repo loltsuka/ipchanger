@@ -6,3 +6,5 @@ You need to add access to /etc/network/interfaces file for write access for all 
 You also need to allow for ifdown and ifup to be run as sudo without requiring password.
 
 The script will create a shortcut in the current directory named shortcutter.desktop, you need to give this permission to run as executable either by terminal chmod +x or by rightclicking and selecting it from permissions if you want to run the script through the shortcut.
+
+Not very spooky
