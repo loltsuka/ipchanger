@@ -1,4 +1,4 @@
-#pyqt_test2.py
+#IPChanger.py
 #!/usr/bin/env python3
 
 import os
