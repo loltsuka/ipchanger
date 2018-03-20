@@ -1,5 +1,5 @@
 #pyqt_test2.py
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import subprocess
