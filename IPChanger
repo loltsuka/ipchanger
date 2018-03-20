@@ -130,5 +130,17 @@ def find_wlan_name():
                 return(interface)
     else:
         print('Too many interfaces, paste name manually into wlan iface name!')
+        
+def create_shortcut():
+    if 'shortcutter.desktop' not in os.listdir():
+        with open('shortcutter.desktop', 'w') as f:
+            f.write('[Desktop Entry]\n')
+            f.write('Name=Test\n')
+            f.write('Exec='+os.getcwd()+'/IPChanger\n')
+            f.write('Icon='+os.getcwd()+'/Thinking.png\n')
+            f.write('Terminal=false\n')
+            f.write('Type=Application\n')
+            f.write('Name[en_US]=IPChanger\n')
 
+create_shortcut()
 run()
