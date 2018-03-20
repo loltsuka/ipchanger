@@ -7,4 +7,8 @@ You also need to allow for ifdown and ifup to be run as sudo without requiring p
 
 The script will create a shortcut in the current directory named shortcutter.desktop, you need to give this permission to run as executable either by terminal chmod +x or by rightclicking and selecting it from permissions if you want to run the script through the shortcut.
 
+<<<<<<< HEAD
 Spooky
+=======
+Not very spooky
+>>>>>>> 9a372a60eae09686f624759bb23261ea4717c138
