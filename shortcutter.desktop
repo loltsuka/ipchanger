@@ -1,8 +1,7 @@
 [Desktop Entry]
-Name=IPChanger
+Name=Test
 Exec=/home/verneri/Documents/python_projects/pyqt/ipchanger/IPChanger.py
 Icon=/home/verneri/Documents/python_projects/pyqt/ipchanger/Thinking.png
-Terminal=true
+Terminal=false
 Type=Application
-
-
+Name[en_US]=IPChanger
