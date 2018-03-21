@@ -14,26 +14,24 @@ class Window(QtGui.QMainWindow):
         self.home()
 
     def home(self):
-        #IP addresses for buttons
-        self.ip_1 = "192.168.11.40"
-        self.ip_2 = "192.168.1.10"
-        self.ip_3 = "172.22.0.2"
-        self.ip_4 = "10.0.0.1"
-
+        self.get_ip_from_file()
         #Interface names
+        #Paste ethernet interface here if too many interfaces found
         self.ethernet_interface = self.find_ethernet_name()
-        self.wlan_interface = self.find_wlan_name()
+        #Paste wlan interface name here if too many interfaces found.
+        self.wlan_interface = self.find_wlan_name() 
 
+
+        print(str(self.d) + 'Here are the IP:s')
         #The buttons themselves 
-        btn1 = self.btn(self.ip_1, self.ip1, 100, 100, 0, 0)
-        btn2 = self.btn(self.ip_2, self.ip2, 100, 100, 100, 0)
-        btn3 = self.btn(self.ip_3, self.ip3, 100, 100, 0, 100)
-        btn4 = self.btn(self.ip_4, self.ip4, 100, 100, 100, 100)
+        btn1 = self.btn(self.d.get('ip0', 'No IP specified'), self.ip1, 100, 100, 0, 0)
+        btn2 = self.btn(self.d.get('ip1', 'No IP specified'), self.ip2, 100, 100, 100, 0)
+        btn3 = self.btn(self.d.get('ip2', 'No IP specified'), self.ip3, 100, 100, 0, 100)
+        btn4 = self.btn(self.d.get('ip3', 'No IP specified'), self.ip4, 100, 100, 100, 100)
         btn5 = self.btn('WLAN off', self.wlan_off, 100, 50, 0, 200)
         btn6 = self.btn('WLAN on', self.wlan_on, 100, 50, 100, 200)
         btn7 = self.btn('ETH off', self.eth_off, 100, 50, 0, 250)
         btn8 = self.btn('ETH on', self.eth_on, 100, 50, 100, 250)
-        btn9 = self.btn('Test', self.eth_on, 200, 100, 0, 300)
         
         #Show the GUI
         self.show()
@@ -59,26 +57,38 @@ class Window(QtGui.QMainWindow):
             f.write("dns-nameserver 8.8.8.8\n")
 
     def ip1(self):
-        self.change_ip(self.ip_1)
+        if self.d.get('ip0', False):
+            self.change_ip(self.d.get('ip0'))
+        else:
+            subprocess.run(['notify-send', 'No IP was specified in file'])
 
     def ip2(self):
-        self.change_ip(self.ip_2)
+        if self.d.get('ip1', False):
+            self.change_ip(self.d.get('ip1'))
+        else:
+            subprocess.run(['notify-send', 'No IP was specified in file'])
 
     def ip3(self):
-        self.change_ip(self.ip_3)
+        if self.d.get('ip2', False):
+            self.change_ip(self.d.get('ip2'))
+        else:
+            subprocess.run(['notify-send', 'No IP was specified in file'])
 
     def ip4(self):
-        self.change_ip(self.ip_4)
+        if self.d.get('ip3', False):
+            self.change_ip(self.d.get('ip3'))
+        else:
+            subprocess.run(['notify-send', 'No IP was specified in file'])
 
     def wlan_off(self):
         if self.wlan_interface == None:
-            print('No WLAN interface found')
+            subprocess.run(['notify-send', 'No WLAN interface found'])
         else:
             subprocess.run(['iconfig', self.wlan_interface, 'down'])
 
     def wlan_on(self):
         if self.wlan_interface == None:
-            print('No WLAN interface found')
+            subprocess.run(['notify-send', 'No WLAN interface found'])
         else:
             subprocess.run(['iconfig', self.wlan_interface, 'up'])
 
@@ -101,7 +111,8 @@ class Window(QtGui.QMainWindow):
                 if interface[0] == 'e':
                     return(interface)
         else:
-            print('Too many interfaces, paste name to ethernet_interface')
+            msg = 'Too many interfaces, paste name to ethernet_interface'
+            subprocess.run(['notify-send', msg])
 
     def find_wlan_name(self):
         all_interfaces = os.listdir('/sys/class/net/')
@@ -110,4 +121,13 @@ class Window(QtGui.QMainWindow):
                 if interface[0] == 'w':
                     return(interface)
         else:
-            print('Too many interfaces, paste name manually into wlan iface name!')
+            msg = 'Too many interfaces, paste name manually into wlan iface name!'
+            subprocess.run(['notify-send', msg])
+
+    def get_ip_from_file(self):
+        with open(os.getcwd()+'/IP_list.txt', 'r') as f:
+            Addresses = f.readlines()
+            self.d = {}
+            for i, address in enumerate(Addresses):
+                self.d['ip{0}'.format(i)] = address
+                print(self.d)

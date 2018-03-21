@@ -9,4 +9,4 @@ You also need to allow for ifdown and ifup to be run as sudo without requiring p
 
 The script will create a shortcut in the current directory named shortcutter.desktop, you need to give this permission to run as executable either by terminal chmod +x or by rightclicking and selecting it from permissions if you want to run the script through the shortcut.
 
-
+The IP addresses you want to use are in a file named IP_list.txt, feel free to change the addresses as needed, and have a max of 4 in there.

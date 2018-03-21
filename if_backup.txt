@@ -1,3 +1,10 @@
 #The loopback network interface
-auto lo 
+auto lo enp5s0
 iface lo inet loopback
+auto enp5s0
+iface enp5s0 inet static
+address 192.168.11.40
+
+netmask 255.255.255.0
+gateway 192.168.11.1
+dns-nameserver 8.8.8.8
