@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 #IPChanger.py
 
+
 import os
 import subprocess
 import sys
@@ -25,3 +26,4 @@ def create_shortcut():
 
 create_shortcut()
 run()
+

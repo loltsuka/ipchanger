@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #window_module.py
 
 import os
@@ -21,8 +22,6 @@ class Window(QtGui.QMainWindow):
         #Paste wlan interface name here if too many interfaces found.
         self.wlan_interface = self.find_wlan_name() 
 
-
-        print(str(self.d) + 'Here are the IP:s')
         #The buttons themselves 
         btn1 = self.btn(self.d.get('ip0', 'No IP specified'), self.ip1, 100, 100, 0, 0)
         btn2 = self.btn(self.d.get('ip1', 'No IP specified'), self.ip2, 100, 100, 100, 0)
@@ -125,9 +124,12 @@ class Window(QtGui.QMainWindow):
             subprocess.run(['notify-send', msg])
 
     def get_ip_from_file(self):
-        with open(os.getcwd()+'/IP_list.txt', 'r') as f:
-            Addresses = f.readlines()
-            self.d = {}
-            for i, address in enumerate(Addresses):
-                self.d['ip{0}'.format(i)] = address
-                print(self.d)
+        try:
+            with open(__file__[:-16]+'/IP_list.txt', 'r') as f:
+                Addresses = f.readlines()
+                self.d = {}
+                for i, address in enumerate(Addresses):
+                    self.d['ip{0}'.format(i)] = address
+        except:
+            print('fuck')
+
