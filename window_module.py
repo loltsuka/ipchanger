@@ -12,6 +12,7 @@ class Window(QtGui.QMainWindow):
         #super()
         self.setGeometry(50,50,200,300)
         self.setWindowTitle("IP changer")
+        self.btnlist = []
         self.home()
 
     def home(self):
@@ -23,19 +24,40 @@ class Window(QtGui.QMainWindow):
         self.wlan_interface = self.find_wlan_name() 
 
         #The buttons themselves 
-        btn1 = self.btn(self.d.get('ip0', 'No IP specified'), self.ip1, 100, 100, 0, 0)
-        btn2 = self.btn(self.d.get('ip1', 'No IP specified'), self.ip2, 100, 100, 100, 0)
-        btn3 = self.btn(self.d.get('ip2', 'No IP specified'), self.ip3, 100, 100, 0, 100)
-        btn4 = self.btn(self.d.get('ip3', 'No IP specified'), self.ip4, 100, 100, 100, 100)
-        btn5 = self.btn('WLAN off', self.wlan_off, 100, 50, 0, 200)
-        btn6 = self.btn('WLAN on', self.wlan_on, 100, 50, 100, 200)
-        btn7 = self.btn('ETH off', self.eth_off, 100, 50, 0, 250)
-        btn8 = self.btn('ETH on', self.eth_on, 100, 50, 100, 250)
+        for ip in self.IPList:
+           self.ip_btn(ip)
         
+        self.w_off   = QtGui.QPushButton('WLAN OFF', self)
+        self.w_off.clicked.connect(lambda : self.wlan_off())
+
+        self.w_on    = QtGui.QPushButton('WLAN ON', self)
+        self.w_off.clicked.connect(lambda : self.wlan_on())
+
+        self.e_off   = QtGui.QPushButton('ETHERNET OFF', self)
+        self.w_off.clicked.connect(lambda : self.eth_off())
+
+        self.e_on    = QtGui.QPushButton('ETHERNET ON', self)
+        self.w_off.clicked.connect(lambda : self.eth_on())
+        
+        #Create layouts and add buttons to them
+        vbox = QtGui.QVBoxLayout()
+        for butn in self.btnlist:
+            vbox.addWidget(butn)
+
+        vbox.addWidget(self.w_off)
+        vbox.addWidget(self.w_on)
+        vbox.addWidget(self.e_off)
+        vbox.addWidget(self.e_on)
+
+        wid = QtGui.QWidget(self)
+        self.setCentralWidget(wid)
+        wid.setLayout(vbox)
+
         #Show the GUI
         self.show()
 
     def change_ip(self, ipaddr): 
+        subprocess.run(['notify-send', 'Changing IP to: '+ipaddr, '-t', '1000'])
         with open('/etc/network/interfaces', 'r') as f:
             lines = f.readlines()
             with open(os.getcwd()+'/if_backup.txt', 'w') as bu:
@@ -55,81 +77,73 @@ class Window(QtGui.QMainWindow):
             f.write("gateway 192.168.11.1\n")
             f.write("dns-nameserver 8.8.8.8\n")
 
-    def ip1(self):
-        if self.d.get('ip0', False):
-            self.change_ip(self.d.get('ip0'))
-        else:
-            subprocess.run(['notify-send', 'No IP was specified in file'])
-
-    def ip2(self):
-        if self.d.get('ip1', False):
-            self.change_ip(self.d.get('ip1'))
-        else:
-            subprocess.run(['notify-send', 'No IP was specified in file'])
-
-    def ip3(self):
-        if self.d.get('ip2', False):
-            self.change_ip(self.d.get('ip2'))
-        else:
-            subprocess.run(['notify-send', 'No IP was specified in file'])
-
-    def ip4(self):
-        if self.d.get('ip3', False):
-            self.change_ip(self.d.get('ip3'))
-        else:
-            subprocess.run(['notify-send', 'No IP was specified in file'])
-
     def wlan_off(self):
         if self.wlan_interface == None:
             subprocess.run(['notify-send', 'No WLAN interface found'])
         else:
             subprocess.run(['iconfig', self.wlan_interface, 'down'])
-
+            subprocess.run(['notify-send', 'Turned WLAN off'])
+            
     def wlan_on(self):
         if self.wlan_interface == None:
             subprocess.run(['notify-send', 'No WLAN interface found'])
         else:
             subprocess.run(['iconfig', self.wlan_interface, 'up'])
+            subprocess.run(['notify-send', 'Turned WLAN on'])
 
     def eth_off(self):
         subprocess.run(['sudo', 'ifdown', self.ethernet_interface])
+        subprocess.run(['notify-send', 'Turned ethernet off'])
     
     def eth_on(self):
         subprocess.run(['sudo', 'ifup', self.ethernet_interface])
+        subprocess.run(['notify-send', 'Turned ethernet on'])
 
-    def btn(self, name, func, xsize, ysize, xpos, ypos):
+    def btn(self, name, func):
         btn = QtGui.QPushButton(name, self)
         btn.clicked.connect(func)
-        btn.resize(xsize, ysize)
-        btn.move(xpos, ypos)
+
+    def ip_btn(self, ipaddr):
+        btn = QtGui.QPushButton(ipaddr, self)
+        btn.clicked.connect(lambda x : self.change_ip(ipaddr))
+        self.btnlist.append(btn)
 
     def find_ethernet_name(self):
         all_interfaces = os.listdir('/sys/class/net/')
-        if len(all_interfaces)<4:
-            for interface in all_interfaces:
-                if interface[0] == 'e':
-                    return(interface)
+        interface_list = []
+        for interface in all_interfaces:
+            if interface[0] == 'e':
+                interface_list.append(interface)
+        
+        if len(interface_list) == 1:
+            return(interface_list[0])
+
         else:
-            msg = 'Too many interfaces, paste name to ethernet_interface'
-            subprocess.run(['notify-send', msg])
+            subprocess.run(['notify-send', 'No eth interface found or too many'])
+            return(None)
+
 
     def find_wlan_name(self):
         all_interfaces = os.listdir('/sys/class/net/')
-        if len(all_interfaces)<4:
-            for interface in all_interfaces:
-                if interface[0] == 'w':
-                    return(interface)
+        interface_list = []
+        for interface in all_interfaces:
+            if interface[0] == 'w':
+                interface_list.append(interface)
+
+        if len(interface_list) == 1:
+            return(interface_list[0])
+
         else:
-            msg = 'Too many interfaces, paste name manually into wlan iface name!'
-            subprocess.run(['notify-send', msg])
+            subprocess.run(['notify-send', 'No WLAN interface found or too many'])
+            return(None)
 
     def get_ip_from_file(self):
         try:
             with open(__file__[:-16]+'/IP_list.txt', 'r') as f:
                 Addresses = f.readlines()
-                self.d = {}
-                for i, address in enumerate(Addresses):
-                    self.d['ip{0}'.format(i)] = address
+                self.IPList = []
+                for address in Addresses:
+                    self.IPList.append(address)
         except:
             print('fuck')
 
