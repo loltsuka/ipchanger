@@ -34,10 +34,10 @@ class Window(QtGui.QMainWindow):
         self.w_off.clicked.connect(lambda : self.wlan_on())
 
         self.e_off   = QtGui.QPushButton('ETHERNET OFF', self)
-        self.w_off.clicked.connect(lambda : self.eth_off())
+        self.e_off.clicked.connect(lambda : self.eth_off())
 
         self.e_on    = QtGui.QPushButton('ETHERNET ON', self)
-        self.w_off.clicked.connect(lambda : self.eth_on())
+        self.e_on.clicked.connect(lambda : self.eth_on())
         
         #Create layouts and add buttons to them
         vbox = QtGui.QVBoxLayout()
